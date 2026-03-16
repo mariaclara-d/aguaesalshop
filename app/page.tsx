@@ -1,65 +1,97 @@
-import Image from "next/image";
+export const dynamic = 'force-dynamic'
 
-export default function Home() {
+import Link from 'next/link'
+import Image from 'next/image'
+import { getSupabaseServer } from '@/lib/supabase-server'
+import ProductCard from '@/components/ProductCard'
+import { Product } from '@/types'
+
+async function getFeaturedProducts(): Promise<Product[]> {
+  const supabase = await getSupabaseServer()
+  const { data } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(8)
+  return data || []
+}
+
+export default async function Home() {
+  const products = await getFeaturedProducts()
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      {/* Hero */}
+      <section className="bg-[#1e3a5f] text-white min-h-[85vh] flex items-center">
+        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center py-20">
+          <div>
+            <p className="text-[#c9a96e] tracking-widest uppercase text-sm mb-4">Joias em Prata 925</p>
+            <h1 className="font-playfair text-5xl md:text-6xl leading-tight mb-6" style={{ fontFamily: 'var(--font-playfair)' }}>
+              Beleza que vem<br />do mar
+            </h1>
+            <p className="text-blue-200 text-lg leading-relaxed mb-8 max-w-md">
+              Peças artesanais em prata 925 inspiradas na leveza e liberdade do oceano. Cada joia carrega a essência da água e do sal.
+            </p>
+            <div className="flex gap-4 flex-wrap">
+              <Link href="/produtos" className="btn-primary">Ver Coleção</Link>
+              <Link href="/sobre" className="btn-outline border-white text-white hover:bg-white hover:text-[#1e3a5f]">Nossa História</Link>
+            </div>
+          </div>
+          <div className="flex justify-center">
+            <Image src="/logo.png" alt="Água e Sal" width={380} height={380} className="opacity-90" />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Categorias */}
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <h2 className="font-playfair text-3xl text-center text-[#1e3a5f] mb-10" style={{ fontFamily: 'var(--font-playfair)' }}>
+          Nossas Categorias
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {['Anéis', 'Colares', 'Pulseiras', 'Brincos'].map(cat => (
+            <Link
+              key={cat}
+              href={`/produtos?categoria=${cat.toLowerCase()}`}
+              className="bg-[#1e3a5f] text-white text-center py-8 rounded-sm hover:bg-[#2a4f7c] transition-colors"
+            >
+              <p className="font-playfair text-xl" style={{ fontFamily: 'var(--font-playfair)' }}>{cat}</p>
+              <p className="text-blue-200 text-xs tracking-widest mt-1 uppercase">Ver peças</p>
+            </Link>
+          ))}
         </div>
-      </main>
-    </div>
-  );
+      </section>
+
+      {/* Produtos em destaque */}
+      <section className="max-w-6xl mx-auto px-4 pb-16">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="font-playfair text-3xl text-[#1e3a5f]" style={{ fontFamily: 'var(--font-playfair)' }}>
+            Destaques
+          </h2>
+          <Link href="/produtos" className="text-sm text-[#1e3a5f] tracking-widest uppercase hover:underline">
+            Ver tudo →
+          </Link>
+        </div>
+        {products.length === 0 ? (
+          <div className="text-center py-20 text-gray-400">
+            <p className="font-playfair text-2xl mb-2" style={{ fontFamily: 'var(--font-playfair)' }}>Em breve</p>
+            <p className="text-sm">Nossa coleção está sendo preparada com muito carinho.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {products.map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
+        )}
+      </section>
+
+      {/* Banner institucional */}
+      <section className="bg-[#1e3a5f] text-white py-16 text-center">
+        <p className="text-[#c9a96e] tracking-widest uppercase text-sm mb-3">Prata 925 Certificada</p>
+        <h2 className="font-playfair text-4xl mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>Feito com alma</h2>
+        <p className="text-blue-200 max-w-xl mx-auto leading-relaxed">
+          Cada peça é produzida artesanalmente, com prata 925 de alta qualidade e inspiração no universo praiano.
+        </p>
+      </section>
+    </>
+  )
 }
