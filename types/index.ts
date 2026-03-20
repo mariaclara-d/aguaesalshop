@@ -7,6 +7,10 @@ export type Product = {
   category: string
   stock: number
   created_at: string
+  weight?: number
+  width?: number
+  height?: number
+  length?: number
 }
 
 export type CartItem = {

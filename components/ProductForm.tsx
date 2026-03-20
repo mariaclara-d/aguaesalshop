@@ -16,6 +16,10 @@ export default function ProductForm({ product }: Props) {
     price: product?.price?.toString() || '',
     category: product?.category || 'Anéis',
     stock: product?.stock?.toString() || '0',
+    weight: product?.weight?.toString() || '',
+    width: product?.width?.toString() || '',
+    height: product?.height?.toString() || '',
+    length: product?.length?.toString() || '',
   })
   const [imageFiles, setImageFiles] = useState<FileList | null>(null)
   const [loading, setLoading] = useState(false)
@@ -61,6 +65,10 @@ export default function ProductForm({ product }: Props) {
         category: form.category,
         stock: parseInt(form.stock),
         images,
+        weight: form.weight ? parseFloat(form.weight) : null,
+        width: form.width ? parseFloat(form.width) : null,
+        height: form.height ? parseFloat(form.height) : null,
+        length: form.length ? parseFloat(form.length) : null,
       }
 
       if (isEdit) {
@@ -108,6 +116,33 @@ export default function ProductForm({ product }: Props) {
           <div>
             <label className="block text-sm text-gray-600 mb-1">Estoque *</label>
             <input name="stock" type="number" min="0" value={form.stock} onChange={handleChange} required
+              className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Peso (kg)</label>
+            <input name="weight" type="number" step="0.001" min="0" value={form.weight} onChange={handleChange}
+              placeholder="ex: 0.050"
+              className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Comprimento (cm)</label>
+            <input name="length" type="number" step="0.01" min="0" value={form.length} onChange={handleChange}
+              placeholder="ex: 5"
+              className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Largura (cm)</label>
+            <input name="width" type="number" step="0.01" min="0" value={form.width} onChange={handleChange}
+              placeholder="ex: 5"
+              className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Altura (cm)</label>
+            <input name="height" type="number" step="0.01" min="0" value={form.height} onChange={handleChange}
+              placeholder="ex: 2"
               className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
           </div>
         </div>
