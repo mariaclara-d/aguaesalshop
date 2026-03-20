@@ -57,7 +57,7 @@ export default function CarrinhoPage() {
             {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
           </span>
         </div>
-        <button className="btn-primary w-full text-center">Finalizar Pedido</button>
+        <Link href="/checkout" className="btn-primary w-full text-center block">Finalizar Pedido</Link>
         <Link href="/produtos" className="block text-center text-sm text-gray-400 mt-3 hover:underline">
           Continuar comprando
         </Link>
