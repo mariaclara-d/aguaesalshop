@@ -26,7 +26,7 @@ type Endereco = {
 }
 
 export default function CheckoutPage() {
-  const { items, total, clear } = useCart()
+  const { items, total } = useCart()
   const router = useRouter()
 
   const [etapa, setEtapa] = useState<'endereco' | 'frete' | 'resumo'>('endereco')
