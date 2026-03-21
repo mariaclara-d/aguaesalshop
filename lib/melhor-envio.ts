@@ -19,6 +19,8 @@ export async function getAccessToken(): Promise<string> {
 
   if (diffDays > 1) return data.access_token
 
+  if (!data.refresh_token) throw new Error('Token expirado. Gere um novo token pessoal no Melhor Envio.')
+
   // Renova o token com refresh_token
   const res = await fetch(`${ME_URL}/oauth/token`, {
     method: 'POST',
