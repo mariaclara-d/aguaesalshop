@@ -21,6 +21,7 @@ export default async function AdminProdutosPage() {
           <p className="text-gray-400 text-sm mt-1">Gerencie os produtos da loja</p>
         </div>
         <div className="flex gap-3">
+          <Link href="/admin/pedidos" className="btn-outline text-sm py-2 px-4">Pedidos</Link>
           <Link href="/admin/produtos/novo" className="btn-primary">+ Novo Produto</Link>
           <form action="/api/admin-logout" method="POST">
             <button type="submit" className="btn-outline text-sm py-2 px-4">Sair</button>
