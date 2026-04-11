@@ -105,39 +105,26 @@ export default function CheckoutPage() {
   }
 
   const finalizarPedido = async () => {
-  setLoading(true)
-  setError('')
-
-  try {
-    // 1. Chamar a API para processar o pagamento
-    const response = await fetch('/api/pagamento/processar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        items, // Do context do carrinho
-        endereco, // Do estado local
-        freteSelecionado, // Do estado local
-        total, // Do context
-      }),
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      setError(data.error || 'Erro ao processar pagamento')
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/pagamento/processar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, endereco, freteSelecionado, total }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || 'Erro ao processar pagamento')
+        return
+      }
+      window.location.href = data.redirectUrl
+    } catch {
+      setError('Erro ao processar pagamento. Tente novamente.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    // 2. Redirecionar para o Mercado Pago
-    window.location.href = data.redirectUrl
-    
-  } catch (error) {
-    console.error('Erro:', error)
-    setError('Erro ao processar pagamento. Tente novamente.')
-    setLoading(false)
   }
-}
 
   const totalComFrete = total + (freteSelecionado ? parseFloat(freteSelecionado.custom_price) : 0)
 
