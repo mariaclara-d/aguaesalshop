@@ -39,9 +39,10 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (orderError || !order) {
-      console.error('Erro ao salvar pedido:', orderError)
-      return NextResponse.json({ error: 'Erro ao processar pedido' }, { status: 500 })
+      console.error('Erro ao salvar pedido no Supabase:', JSON.stringify(orderError))
+      return NextResponse.json({ error: 'Erro ao processar pedido', detail: orderError?.message }, { status: 500 })
     }
+    console.log('Pedido salvo:', order.id)
 
     const checkoutItems = [
       ...items.map((item: any) => ({
@@ -80,8 +81,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ redirectUrl: checkout.url, orderId: order.id })
 
-  } catch (error) {
-    console.error('Erro em /api/pagamento/processar:', error)
-    return NextResponse.json({ error: 'Erro ao processar pagamento' }, { status: 500 })
+  } catch (error: any) {
+    console.error('Erro em /api/pagamento/processar:', error?.message || error)
+    return NextResponse.json({ error: 'Erro ao processar pagamento', detail: error?.message }, { status: 500 })
   }
 }
