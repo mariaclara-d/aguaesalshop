@@ -25,6 +25,10 @@ export async function POST(request: NextRequest) {
           name: item.product.name,
           price: item.product.price,
           quantity: item.quantity,
+          weight: item.product.weight || 0.05,
+          width: item.product.width || 5,
+          height: item.product.height || 2,
+          length: item.product.length || 5,
         })),
         shipping_option: {
           company: freteSelecionado.company.name,

@@ -67,12 +67,16 @@ export async function POST(req: NextRequest) {
         quantity: item.quantity,
         unitary_value: item.price,
       })) : [],
-      volumes: [{
-        height: 10,
-        width: 15,
-        length: 20,
-        weight: 0.5,
-      }],
+      volumes: (() => {
+        const items = Array.isArray(order.items) ? order.items : []
+        const totalWeight = items.reduce((sum: number, item: any) =>
+          sum + (item.weight || 0.05) * item.quantity, 0
+        )
+        const maxWidth = Math.max(...items.map((i: any) => i.width || 5))
+        const maxHeight = Math.max(...items.map((i: any) => i.height || 2))
+        const maxLength = Math.max(...items.map((i: any) => i.length || 5))
+        return [{ weight: totalWeight, width: maxWidth, height: maxHeight, length: maxLength }]
+      })(),
       options: {
         insurance_value: Number(order.total),
         receipt: false,
