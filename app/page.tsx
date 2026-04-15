@@ -32,7 +32,7 @@ export default async function Home() {
         }}
       >
         {/* Sobreposição escura para legibilidade do texto */}
-        <div className="absolute inset-0 bg-[#1e3a5f]/60" />
+        <div className="absolute inset-0 bg-[#1e3a5f]/40" />
         <div className="relative z-10 max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center py-20">
           <div>
             <p className="text-[#c9a96e] tracking-widest uppercase text-sm mb-4">Joias em Prata 925</p>
@@ -48,7 +48,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="flex justify-center">
-            <Image src="/logo.png" alt="Água e Sal" width={380} height={380} className="opacity-90" />
+            <Image src="/logo.png" alt="Água e Sal" width={380} height={380} className="opacity-90 drop-shadow-2xl" />
           </div>
         </div>
       </section>
