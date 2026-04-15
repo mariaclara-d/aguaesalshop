@@ -22,8 +22,18 @@ export default async function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-[#1e3a5f] text-white min-h-[85vh] flex items-center">
-        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center py-20">
+      <section
+        className="text-white min-h-[85vh] flex items-center relative"
+        style={{
+          backgroundImage: 'url(/fundo1.jpeg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: '#1e3a5f',
+        }}
+      >
+        {/* Sobreposição escura para legibilidade do texto */}
+        <div className="absolute inset-0 bg-[#1e3a5f]/60" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center py-20">
           <div>
             <p className="text-[#c9a96e] tracking-widest uppercase text-sm mb-4">Joias em Prata 925</p>
             <h1 className="font-playfair text-5xl md:text-6xl leading-tight mb-6" style={{ fontFamily: 'var(--font-playfair)' }}>
