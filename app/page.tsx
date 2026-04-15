@@ -25,7 +25,7 @@ export default async function Home() {
       <section
         className="text-white min-h-[85vh] flex items-center relative"
         style={{
-          backgroundImage: 'url(/fundo1.jpeg)',
+          backgroundImage: 'url(/fundo2.jpeg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundColor: '#1e3a5f',
