@@ -48,7 +48,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="flex justify-center">
-            <Image src="/logo.png" alt="Água e Sal" width={380} height={380} className="opacity-90 drop-shadow-2xl" />
+            <Image src="/logo-removebg-preview.png" alt="Água e Sal" width={380} height={380} className="opacity-90 drop-shadow-2xl" />
           </div>
         </div>
       </section>
