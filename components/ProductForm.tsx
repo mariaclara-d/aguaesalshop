@@ -72,9 +72,19 @@ export default function ProductForm({ product }: Props) {
       }
 
       if (isEdit) {
-        await supabase.from('products').update(payload).eq('id', product.id)
+        const res = await fetch(`/api/admin/produtos/${product.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error) }
       } else {
-        await supabase.from('products').insert(payload)
+        const res = await fetch('/api/admin/produtos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error) }
       }
 
       router.push('/admin/produtos')
