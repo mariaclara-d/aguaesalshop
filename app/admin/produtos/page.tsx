@@ -48,6 +48,7 @@ export default async function AdminProdutosPage() {
                 <td className="px-4 py-3">{Number(p.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                 <td className="px-4 py-3">{p.stock}</td>
                 <td className="px-4 py-3 flex gap-2 justify-end">
+                  <Link href={`/admin/produtos/${p.id}/fotos`} className="btn-outline py-1 px-3 text-xs">Fotos</Link>
                   <Link href={`/admin/produtos/${p.id}`} className="btn-outline py-1 px-3 text-xs">Editar</Link>
                   <AdminDeleteButton id={p.id} />
                 </td>
