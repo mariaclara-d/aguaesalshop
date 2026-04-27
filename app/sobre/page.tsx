@@ -20,7 +20,13 @@ export default function SobrePage() {
           </p>
         </div>
         <div className="flex justify-center">
-          <Image src="/logo.png" alt="Água e Sal" width={320} height={320} className="opacity-90" />
+          <Image
+            src="/sobre.jpeg"
+            alt="Água e Sal Joias"
+            width={480}
+            height={560}
+            className="rounded-sm object-cover shadow-lg w-full max-w-sm"
+          />
         </div>
       </div>
 
