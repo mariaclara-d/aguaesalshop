@@ -21,7 +21,10 @@ export async function createCheckoutLink(payload: {
   })
 
   const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Erro ao criar link InfinitePay')
+  if (!res.ok) {
+    console.error('InfinitePay erro:', JSON.stringify(data))
+    throw new Error(data.message || JSON.stringify(data))
+  }
   return data as { url: string; slug: string }
 }
 

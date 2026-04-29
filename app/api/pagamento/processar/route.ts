@@ -61,13 +61,16 @@ export async function POST(request: NextRequest) {
       },
     ]
 
+    const phone = endereco.telefone.replace(/\D/g, '')
+    const phoneFormatted = phone.startsWith('55') ? `+${phone}` : `+55${phone}`
+
     const checkout = await createCheckoutLink({
       order_nsu: order.id,
       items: checkoutItems,
       customer: {
         name: endereco.nome,
         email: endereco.email,
-        phone_number: endereco.telefone,
+        phone_number: phoneFormatted,
       },
       address: {
         cep: endereco.cep.replace(/\D/g, ''),

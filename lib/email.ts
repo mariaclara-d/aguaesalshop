@@ -23,7 +23,7 @@ export async function enviarEmailNovoPedido(order: {
   ).join('')
 
   await resend.emails.send({
-    from: 'Água e Sal Joias <onboarding@resend.dev>',
+    from: 'Água e Sal Joias <noreply@aguaesalpratas.com.br>',
     to: 'aguaesal925@gmail.com',
     subject: `🛍️ Novo pedido recebido — ${order.customer_name}`,
     html: `
