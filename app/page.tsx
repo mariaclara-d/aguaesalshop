@@ -59,7 +59,7 @@ export default async function Home() {
           Nossas Categorias
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {['Anéis', 'Colares', 'Pulseiras', 'Brincos'].map(cat => (
+          {['Anéis', 'Colares', 'Pulseiras', 'Brincos', 'Tornozeleiras', 'Masculino'].map(cat => (
             <Link
               key={cat}
               href={`/produtos?categoria=${cat.toLowerCase()}`}

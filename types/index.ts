@@ -11,11 +11,13 @@ export type Product = {
   width?: number
   height?: number
   length?: number
+  sizes?: number[]
 }
 
 export type CartItem = {
   product: Product
   quantity: number
+  size?: number
 }
 
 export type Order = {

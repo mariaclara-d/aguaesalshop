@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
           name: item.product.name,
           price: item.product.price,
           quantity: item.quantity,
+          size: item.size || null,
           weight: item.product.weight || 0.05,
           width: item.product.width || 5,
           height: item.product.height || 2,

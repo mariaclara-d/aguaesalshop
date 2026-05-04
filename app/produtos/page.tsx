@@ -16,7 +16,7 @@ export default async function ProdutosPage({ searchParams }: { searchParams: Pro
   const { categoria } = await searchParams
   const products = await getProducts(categoria)
 
-  const categorias = ['Todos', 'Anéis', 'Colares', 'Pulseiras', 'Brincos']
+  const categorias = ['Todos', 'Anéis', 'Colares', 'Pulseiras', 'Brincos', 'Tornozeleiras', 'Masculino']
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">

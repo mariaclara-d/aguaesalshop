@@ -21,6 +21,7 @@ export default function ProductForm({ product }: Props) {
     height: product?.height?.toString() || '',
     length: product?.length?.toString() || '',
   })
+  const [selectedSizes, setSelectedSizes] = useState<number[]>(product?.sizes || [])
   const [imageFiles, setImageFiles] = useState<FileList | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -69,6 +70,7 @@ export default function ProductForm({ product }: Props) {
         width: form.width ? parseFloat(form.width) : null,
         height: form.height ? parseFloat(form.height) : null,
         length: form.length ? parseFloat(form.length) : null,
+        sizes: form.category === 'Anéis' ? selectedSizes : [],
       }
 
       if (isEdit) {
@@ -157,11 +159,37 @@ export default function ProductForm({ product }: Props) {
           </div>
         </div>
 
+        {/* Tamanhos — só para anéis */}
+        {form.category === 'Anéis' && (
+          <div>
+            <label className="block text-sm text-gray-600 mb-2">Tamanhos disponíveis</label>
+            <div className="flex flex-wrap gap-2">
+              {[9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26].map(size => {
+                const active = selectedSizes.includes(size)
+                return (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setSelectedSizes(prev =>
+                      active ? prev.filter(s => s !== size) : [...prev, size].sort((a,b) => a-b)
+                    )}
+                    className={`w-11 h-11 text-sm border rounded-sm transition-colors ${
+                      active ? 'bg-[#1e3a5f] text-white border-[#1e3a5f]' : 'border-gray-200 text-gray-600 hover:border-[#1e3a5f]'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="text-xs text-gray-400 mt-1">Clique para marcar/desmarcar os tamanhos disponíveis</p>
+          </div>
+        )}
+
         <div>
-          <label className="block text-sm text-gray-600 mb-1">Categoria *</label>
           <select name="category" value={form.category} onChange={handleChange}
             className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm bg-white">
-            {['Anéis', 'Colares', 'Pulseiras', 'Brincos'].map(c => (
+            {['Anéis', 'Colares', 'Pulseiras', 'Brincos', 'Tornozeleiras', 'Masculino'].map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>

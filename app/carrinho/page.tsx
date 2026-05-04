@@ -26,24 +26,24 @@ export default function CarrinhoPage() {
       </h1>
 
       <div className="space-y-4 mb-8">
-        {items.map(({ product, quantity }) => (
-          <div key={product.id} className="bg-white p-4 flex gap-4 items-center rounded-sm shadow-sm">
+        {items.map(({ product, quantity, size }) => (
+          <div key={`${product.id}-${size}`} className="bg-white p-4 flex gap-4 items-center rounded-sm shadow-sm">
             <div className="relative w-20 h-20 bg-[#f0ece6] rounded-sm overflow-hidden flex-shrink-0">
               <Image src={product.images[0] || '/placeholder.svg'} alt={product.name} fill className="object-cover" />
             </div>
             <div className="flex-1">
               <h3 className="font-playfair text-[#1e3a5f]" style={{ fontFamily: 'var(--font-playfair)' }}>{product.name}</h3>
-              <p className="text-sm text-gray-400">{product.category}</p>
+              <p className="text-sm text-gray-400">{product.category}{size ? ` · Tamanho ${size}` : ''}</p>
               <p className="text-[#1e3a5f] font-semibold mt-1">
                 {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => update(product.id, quantity - 1)} className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-100">−</button>
+              <button onClick={() => update(product.id, quantity - 1, size)} className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-100">−</button>
               <span className="w-8 text-center">{quantity}</span>
-              <button onClick={() => update(product.id, quantity + 1)} className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-100">+</button>
+              <button onClick={() => update(product.id, quantity + 1, size)} className="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-100">+</button>
             </div>
-            <button onClick={() => remove(product.id)} className="text-gray-400 hover:text-red-500 transition-colors ml-2">
+            <button onClick={() => remove(product.id, size)} className="text-gray-400 hover:text-red-500 transition-colors ml-2">
               <Trash2 size={18} />
             </button>
           </div>
