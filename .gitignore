@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# aulas/docs locais
+ATIVIDADE_*.md
+AULA_*.md
+CHECKLIST_*.md
+COMECE_*.md
+DEEP_DIVE_*.md
+GUIA_*.md
+INDICE_*.md
+MAPA_*.md
+README_AULA.md
+RESUMO_*.md
