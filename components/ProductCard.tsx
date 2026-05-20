@@ -28,15 +28,32 @@ export default function ProductCard({ product }: { product: Product }) {
         </Link>
         <p className="text-sm text-gray-500 mb-3">{product.category}</p>
         <div className="flex items-center justify-between">
-          <span className="text-[#1e3a5f] font-semibold">
-            {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-          </span>
-          <button
-            onClick={() => add(product)}
-            className="btn-primary flex items-center gap-2 text-xs py-2 px-3"
-          >
-            <ShoppingBag size={14} /> Adicionar
-          </button>
+          <div>
+            {product.variants && product.variants.length > 0 ? (
+              <>
+                <span className="text-xs text-gray-400">a partir de</span>
+                <span className="block text-[#1e3a5f] font-semibold">
+                  {Math.min(...product.variants.map(v => v.price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </span>
+              </>
+            ) : (
+              <span className="text-[#1e3a5f] font-semibold">
+                {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </span>
+            )}
+          </div>
+          {product.variants && product.variants.length > 0 ? (
+            <Link href={`/produto/${product.id}`} className="btn-primary flex items-center gap-2 text-xs py-2 px-3">
+              <ShoppingBag size={14} /> Ver opções
+            </Link>
+          ) : (
+            <button
+              onClick={() => add(product)}
+              className="btn-primary flex items-center gap-2 text-xs py-2 px-3"
+            >
+              <ShoppingBag size={14} /> Adicionar
+            </button>
+          )}
         </div>
       </div>
     </div>
