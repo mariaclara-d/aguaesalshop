@@ -1,3 +1,8 @@
+export type Variant = {
+  size: string
+  price: number
+}
+
 export type Product = {
   id: string
   name: string
@@ -11,13 +16,15 @@ export type Product = {
   width?: number
   height?: number
   length?: number
-  sizes?: number[]
+  sizes?: string[]
+  variants?: Variant[]
 }
 
 export type CartItem = {
   product: Product
   quantity: number
-  size?: number
+  size?: string
+  price?: number
 }
 
 export type Order = {

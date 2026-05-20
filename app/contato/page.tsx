@@ -28,7 +28,7 @@ export default function ContatoPage() {
             </div>
             <div>
               <p className="text-xs tracking-widest uppercase text-gray-400 mb-1">E-mail</p>
-              <p className="font-semibold">contato@aguaesal.com.br</p>
+              <p className="font-semibold">aguaesal925@gmail.com</p>
             </div>
           </a>
           <a href="https://wa.me/5500000000000"
@@ -38,7 +38,7 @@ export default function ContatoPage() {
             </div>
             <div>
               <p className="text-xs tracking-widest uppercase text-gray-400 mb-1">WhatsApp</p>
-              <p className="font-semibold">(00) 00000-0000</p>
+              <p className="font-semibold">(00) 9999-0000</p>
             </div>
           </a>
         </div>

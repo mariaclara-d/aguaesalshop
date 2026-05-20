@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         items: items.map((item: any) => ({
           id: item.product.id,
           name: item.product.name,
-          price: item.product.price,
+          price: item.price ?? item.product.price,
           quantity: item.quantity,
           size: item.size || null,
           weight: item.product.weight || 0.05,

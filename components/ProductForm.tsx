@@ -2,9 +2,15 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getSupabase } from '@/lib/supabase'
-import { Product } from '@/types'
+import { Product, Variant } from '@/types'
 
 type Props = { product?: Product }
+
+const TEXT_SIZE_CATEGORIES = ['Pulseiras', 'Colares', 'Tornozeleiras', 'Masculino']
+const VARIANT_CATEGORIES = ['Brincos']
+const RING_CATEGORY = 'Anéis'
+const TEXT_SIZES = ['PP', 'P', 'M', 'G', 'GG']
+const RING_SIZES = [9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]
 
 export default function ProductForm({ product }: Props) {
   const router = useRouter()
@@ -21,7 +27,20 @@ export default function ProductForm({ product }: Props) {
     height: product?.height?.toString() || '',
     length: product?.length?.toString() || '',
   })
-  const [selectedSizes, setSelectedSizes] = useState<number[]>(product?.sizes || [])
+
+  // Anéis: tamanhos numéricos
+  const [ringSizes, setRingSizes] = useState<number[]>(
+    (product?.sizes || []).map(Number).filter(Boolean)
+  )
+
+  // Pulseiras/Colares/etc: tamanhos texto sem preço
+  const [textSizes, setTextSizes] = useState<string[]>(product?.sizes || [])
+
+  // Brincos: variantes com preço
+  const [variants, setVariants] = useState<Variant[]>(
+    product?.variants || [{ size: 'P', price: 0 }, { size: 'M', price: 0 }, { size: 'G', price: 0 }]
+  )
+
   const [imageFiles, setImageFiles] = useState<FileList | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -53,16 +72,24 @@ export default function ProductForm({ product }: Props) {
     try {
       const supabase = getSupabase()
       let images = product?.images || []
-
       if (imageFiles && imageFiles.length > 0) {
         const uploaded = await uploadImages(imageFiles)
         images = [...images, ...uploaded]
       }
 
+      const isRing = form.category === RING_CATEGORY
+      const isVariant = VARIANT_CATEGORIES.includes(form.category)
+      const isText = TEXT_SIZE_CATEGORIES.includes(form.category)
+
+      // Preço base: para brincos usa o menor preço das variantes
+      const basePrice = isVariant
+        ? Math.min(...variants.filter(v => v.price > 0).map(v => v.price), parseFloat(form.price) || 0)
+        : parseFloat(form.price)
+
       const payload = {
         name: form.name,
         description: form.description,
-        price: parseFloat(form.price),
+        price: basePrice,
         category: form.category,
         stock: parseInt(form.stock),
         images,
@@ -70,7 +97,8 @@ export default function ProductForm({ product }: Props) {
         width: form.width ? parseFloat(form.width) : null,
         height: form.height ? parseFloat(form.height) : null,
         length: form.length ? parseFloat(form.length) : null,
-        sizes: form.category === 'Anéis' ? selectedSizes : [],
+        sizes: isRing ? ringSizes.map(String) : isText ? textSizes : [],
+        variants: isVariant ? variants.filter(v => v.price > 0) : [],
       }
 
       if (isEdit) {
@@ -114,23 +142,111 @@ export default function ProductForm({ product }: Props) {
         </div>
 
         <div>
+          <label className="block text-sm text-gray-600 mb-1">Categoria *</label>
+          <select name="category" value={form.category} onChange={handleChange}
+            className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm bg-white">
+            {['Anéis', 'Colares', 'Pulseiras', 'Brincos', 'Tornozeleiras', 'Masculino'].map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <label className="block text-sm text-gray-600 mb-1">Descrição</label>
           <textarea name="description" value={form.description} onChange={handleChange} rows={4}
             className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm resize-none" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Preço (R$) *</label>
-            <input name="price" type="number" step="0.01" min="0" value={form.price} onChange={handleChange} required
-              className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+        {/* Preço — não aparece para brincos (preço vem das variantes) */}
+        {!VARIANT_CATEGORIES.includes(form.category) && (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Preço (R$) *</label>
+              <input name="price" type="number" step="0.01" min="0" value={form.price} onChange={handleChange} required
+                className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Estoque *</label>
+              <input name="stock" type="number" min="0" value={form.stock} onChange={handleChange} required
+                className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+            </div>
           </div>
+        )}
+
+        {/* Variantes com preço — só brincos */}
+        {VARIANT_CATEGORIES.includes(form.category) && (
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Estoque *</label>
-            <input name="stock" type="number" min="0" value={form.stock} onChange={handleChange} required
-              className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+            <label className="block text-sm text-gray-600 mb-2">Tamanhos e preços *</label>
+            <div className="space-y-2">
+              {variants.map((v, i) => (
+                <div key={v.size} className="flex items-center gap-3">
+                  <span className="w-8 text-sm font-semibold text-[#1e3a5f]">{v.size}</span>
+                  <input
+                    type="number" step="0.01" min="0"
+                    placeholder={`Preço tamanho ${v.size} (0 = indisponível)`}
+                    value={v.price || ''}
+                    onChange={e => setVariants(prev => prev.map((vv, ii) =>
+                      ii === i ? { ...vv, price: parseFloat(e.target.value) || 0 } : vv
+                    ))}
+                    className="flex-1 border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-1">Deixe 0 para tamanhos indisponíveis</p>
+            <div className="mt-3">
+              <label className="block text-sm text-gray-600 mb-1">Estoque *</label>
+              <input name="stock" type="number" min="0" value={form.stock} onChange={handleChange} required
+                className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Tamanhos numéricos — só anéis */}
+        {form.category === RING_CATEGORY && (
+          <div>
+            <label className="block text-sm text-gray-600 mb-2">Tamanhos disponíveis</label>
+            <div className="flex flex-wrap gap-2">
+              {RING_SIZES.map(size => {
+                const active = ringSizes.includes(size)
+                return (
+                  <button key={size} type="button"
+                    onClick={() => setRingSizes(prev =>
+                      active ? prev.filter(s => s !== size) : [...prev, size].sort((a,b) => a-b)
+                    )}
+                    className={`w-11 h-11 text-sm border rounded-sm transition-colors ${
+                      active ? 'bg-[#1e3a5f] text-white border-[#1e3a5f]' : 'border-gray-200 text-gray-600 hover:border-[#1e3a5f]'
+                    }`}>
+                    {size}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Tamanhos P/M/G — pulseiras, colares, tornozeleiras, masculino */}
+        {TEXT_SIZE_CATEGORIES.includes(form.category) && (
+          <div>
+            <label className="block text-sm text-gray-600 mb-2">Tamanhos disponíveis</label>
+            <div className="flex gap-2">
+              {TEXT_SIZES.map(size => {
+                const active = textSizes.includes(size)
+                return (
+                  <button key={size} type="button"
+                    onClick={() => setTextSizes(prev =>
+                      active ? prev.filter(s => s !== size) : [...prev, size]
+                    )}
+                    className={`px-4 h-11 text-sm border rounded-sm transition-colors ${
+                      active ? 'bg-[#1e3a5f] text-white border-[#1e3a5f]' : 'border-gray-200 text-gray-600 hover:border-[#1e3a5f]'
+                    }`}>
+                    {size}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -157,42 +273,6 @@ export default function ProductForm({ product }: Props) {
               placeholder="ex: 2"
               className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
           </div>
-        </div>
-
-        {/* Tamanhos — só para anéis */}
-        {form.category === 'Anéis' && (
-          <div>
-            <label className="block text-sm text-gray-600 mb-2">Tamanhos disponíveis</label>
-            <div className="flex flex-wrap gap-2">
-              {[9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26].map(size => {
-                const active = selectedSizes.includes(size)
-                return (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => setSelectedSizes(prev =>
-                      active ? prev.filter(s => s !== size) : [...prev, size].sort((a,b) => a-b)
-                    )}
-                    className={`w-11 h-11 text-sm border rounded-sm transition-colors ${
-                      active ? 'bg-[#1e3a5f] text-white border-[#1e3a5f]' : 'border-gray-200 text-gray-600 hover:border-[#1e3a5f]'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                )
-              })}
-            </div>
-            <p className="text-xs text-gray-400 mt-1">Clique para marcar/desmarcar os tamanhos disponíveis</p>
-          </div>
-        )}
-
-        <div>
-          <select name="category" value={form.category} onChange={handleChange}
-            className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm bg-white">
-            {['Anéis', 'Colares', 'Pulseiras', 'Brincos', 'Tornozeleiras', 'Masculino'].map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
         </div>
 
         <div>
