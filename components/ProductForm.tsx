@@ -37,8 +37,13 @@ export default function ProductForm({ product }: Props) {
   const [textSizes, setTextSizes] = useState<string[]>(product?.sizes || [])
 
   // Brincos: variantes com preço
+  const existingVariants = product?.variants && product.variants.length > 0
+    ? product.variants
+    : [{ size: 'P', price: 0 }, { size: 'M', price: 0 }, { size: 'G', price: 0 }]
+
+  // Garante que P, M, G sempre aparecem, preenchendo com valores existentes
   const [variants, setVariants] = useState<Variant[]>(
-    product?.variants || [{ size: 'P', price: 0 }, { size: 'M', price: 0 }, { size: 'G', price: 0 }]
+    ['P', 'M', 'G'].map(s => existingVariants.find((v: Variant) => v.size === s) || { size: s, price: 0 })
   )
 
   const [imageFiles, setImageFiles] = useState<FileList | null>(null)
@@ -81,9 +86,10 @@ export default function ProductForm({ product }: Props) {
       const isVariant = VARIANT_CATEGORIES.includes(form.category)
       const isText = TEXT_SIZE_CATEGORIES.includes(form.category)
 
-      // Preço base: para brincos usa o menor preço das variantes
+      // Preço base: para brincos usa o menor preço das variantes com preço > 0
+      const validVariants = variants.filter(v => v.price > 0)
       const basePrice = isVariant
-        ? Math.min(...variants.filter(v => v.price > 0).map(v => v.price), parseFloat(form.price) || 0)
+        ? (validVariants.length > 0 ? Math.min(...validVariants.map(v => v.price)) : 0)
         : parseFloat(form.price)
 
       const payload = {
@@ -98,7 +104,7 @@ export default function ProductForm({ product }: Props) {
         height: form.height ? parseFloat(form.height) : null,
         length: form.length ? parseFloat(form.length) : null,
         sizes: isRing ? ringSizes.map(String) : isText ? textSizes : [],
-        variants: isVariant ? variants.filter(v => v.price > 0) : [],
+        variants: isVariant ? validVariants : [],
       }
 
       if (isEdit) {
