@@ -1,14 +1,12 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { getSupabase } from '@/lib/supabase'
 
 export default function AdminDeleteButton({ id }: { id: string }) {
   const router = useRouter()
 
   const handleDelete = async () => {
     if (!confirm('Tem certeza que deseja excluir este produto?')) return
-    const supabase = getSupabase()
-    await supabase.from('products').delete().eq('id', id)
+    await fetch(`/api/admin/produtos/${id}`, { method: 'DELETE' })
     router.refresh()
   }
 
