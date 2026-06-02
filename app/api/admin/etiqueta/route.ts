@@ -92,13 +92,15 @@ export async function POST(req: NextRequest) {
       },
     }
 
+    console.log('ME cart payload from:', JSON.stringify(payload.from))
     const res = await fetch(`${ME_URL}/api/v2/me/cart`, {
       method: 'POST',
       headers,
       body: JSON.stringify(payload),
     })
     const data = await res.json()
-    if (!res.ok) return NextResponse.json({ error: data.message || 'Erro ao inserir no carrinho ME' }, { status: 500 })
+    console.log('ME cart response:', JSON.stringify(data))
+    if (!res.ok) return NextResponse.json({ error: data.message || JSON.stringify(data) }, { status: 500 })
 
     await supabase.from('orders').update({ me_cart_id: data.id, me_label_status: 'pending' }).eq('id', orderId)
     return NextResponse.json({ ok: true, cart_id: data.id })
