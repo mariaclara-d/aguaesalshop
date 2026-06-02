@@ -16,6 +16,7 @@ type Endereco = {
   nome: string
   email: string
   telefone: string
+  cpf: string
   cep: string
   rua: string
   numero: string
@@ -31,7 +32,7 @@ export default function CheckoutPage() {
 
   const [etapa, setEtapa] = useState<'endereco' | 'frete' | 'resumo'>('endereco')
   const [endereco, setEndereco] = useState<Endereco>({
-    nome: '', email: '', telefone: '', cep: '', rua: '',
+    nome: '', email: '', telefone: '', cpf: '', cep: '', rua: '',
     numero: '', complemento: '', bairro: '', cidade: '', estado: '',
   })
   const [fretes, setFretes] = useState<FreteOption[]>([])
@@ -171,6 +172,12 @@ export default function CheckoutPage() {
                 className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
             </div>
             <div>
+              <label className="block text-sm text-gray-600 mb-1">CPF *</label>
+              <input name="cpf" value={endereco.cpf} onChange={handleEnderecoChange} required
+                placeholder="000.000.000-00" maxLength={14}
+                className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
+            </div>
+            <div>
               <label className="block text-sm text-gray-600 mb-1">CEP *</label>
               <input name="cep" value={endereco.cep} onChange={handleEnderecoChange} onBlur={buscarCep}
                 placeholder="00000-000" maxLength={9} required
@@ -207,7 +214,7 @@ export default function CheckoutPage() {
                 className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
             </div>
           </div>
-          <button onClick={calcularFrete} disabled={loading || !endereco.cep || !endereco.nome || !endereco.email}
+          <button onClick={calcularFrete} disabled={loading || !endereco.cep || !endereco.nome || !endereco.email || !endereco.cpf}
             className="btn-primary w-full disabled:opacity-50">
             {loading ? 'Calculando frete...' : 'Calcular Frete'}
           </button>

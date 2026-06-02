@@ -19,7 +19,17 @@ export async function POST(request: NextRequest) {
         customer_name: endereco.nome,
         customer_email: endereco.email,
         customer_phone: endereco.telefone,
+        customer_cpf: endereco.cpf.replace(/\D/g, ''),
         shipping_address: `${endereco.rua}, ${endereco.numero} ${endereco.complemento} - ${endereco.bairro}, ${endereco.cidade}/${endereco.estado} CEP: ${endereco.cep}`,
+        shipping_address_data: {
+          rua: endereco.rua,
+          numero: endereco.numero,
+          complemento: endereco.complemento || '',
+          bairro: endereco.bairro,
+          cidade: endereco.cidade,
+          estado: endereco.estado,
+          cep: endereco.cep.replace(/\D/g, ''),
+        },
         items: items.map((item: any) => ({
           id: item.product.id,
           name: item.product.name,
