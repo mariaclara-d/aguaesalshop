@@ -2,6 +2,118 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+const FROM = 'Água e Sal Joias <noreply@aguaesalpratas.com.br>'
+
+function cabecalhoHtml(subtitulo: string) {
+  return `
+    <div style="background:#1e3a5f;padding:24px;text-align:center">
+      <h1 style="color:#c9a96e;margin:0;font-size:24px">Água e Sal Joias</h1>
+      <p style="color:#fff;margin:8px 0 0">${subtitulo}</p>
+    </div>
+  `
+}
+
+export async function enviarEmailConfirmacaoCliente(order: {
+  id: string
+  customer_name: string
+  customer_email: string
+  shipping_address: string
+  items: { name: string; price: number; quantity: number }[]
+  shipping_option: { company: string; name: string; price: string; delivery_time: number }
+  total: number
+  payment_method: string
+}) {
+  const itensHtml = order.items.map(item =>
+    `<tr>
+      <td style="padding:8px;border-bottom:1px solid #f0f0f0">${item.name} × ${item.quantity}</td>
+      <td style="padding:8px;border-bottom:1px solid #f0f0f0;text-align:right">
+        ${(item.price * item.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+      </td>
+    </tr>`
+  ).join('')
+
+  await resend.emails.send({
+    from: FROM,
+    to: order.customer_email,
+    subject: `Pedido confirmado — Água e Sal Joias`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#333">
+        ${cabecalhoHtml('Seu pedido foi confirmado! 🎉')}
+        <div style="padding:24px">
+          <p>Olá, <strong>${order.customer_name}</strong>! Recebemos seu pedido e ele já está sendo preparado.</p>
+
+          <h3 style="color:#1e3a5f">Itens do pedido</h3>
+          <table style="width:100%;border-collapse:collapse">
+            ${itensHtml}
+            <tr>
+              <td style="padding:8px;color:#666">Frete — ${order.shipping_option.company} ${order.shipping_option.name}</td>
+              <td style="padding:8px;text-align:right;color:#666">
+                ${Number(order.shipping_option.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </td>
+            </tr>
+            <tr style="background:#f8f5f0">
+              <td style="padding:10px 8px;font-weight:bold;color:#1e3a5f">Total</td>
+              <td style="padding:10px 8px;text-align:right;font-weight:bold;color:#1e3a5f">
+                ${Number(order.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </td>
+            </tr>
+          </table>
+
+          <h3 style="color:#1e3a5f">Endereço de entrega</h3>
+          <p style="color:#666;margin:0">${order.shipping_address}</p>
+
+          <div style="margin-top:24px;padding:16px;background:#f8f5f0;border-radius:4px">
+            <p style="margin:0;color:#666;font-size:14px">
+              Prazo estimado: <strong>${order.shipping_option.delivery_time} dias úteis</strong> após o envio.<br/>
+              Assim que seu pedido for enviado, você receberá um e-mail com o código de rastreio.
+            </p>
+          </div>
+
+          <p style="margin-top:24px;color:#666;font-size:13px">Dúvidas? Entre em contato pelo Instagram ou WhatsApp.</p>
+        </div>
+      </div>
+    `,
+  })
+}
+
+export async function enviarEmailPedidoEnviado(order: {
+  customer_name: string
+  customer_email: string
+  shipping_address: string
+  shipping_option: { company: string; name: string; delivery_time: number }
+  tracking_code?: string
+}) {
+  const rastreioHtml = order.tracking_code
+    ? `<p>Seu código de rastreio é: <strong>${order.tracking_code}</strong></p>
+       <p><a href="https://rastreamento.correios.com.br/app/index.php" style="color:#1e3a5f">Clique aqui para rastrear seu pedido</a></p>`
+    : `<p>Em breve o código de rastreio estará disponível.</p>`
+
+  await resend.emails.send({
+    from: FROM,
+    to: order.customer_email,
+    subject: `Seu pedido foi enviado! 🚚 — Água e Sal Joias`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#333">
+        ${cabecalhoHtml('Seu pedido está a caminho! 🚚')}
+        <div style="padding:24px">
+          <p>Olá, <strong>${order.customer_name}</strong>! Seu pedido foi enviado.</p>
+
+          <h3 style="color:#1e3a5f">Informações de entrega</h3>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+            <tr><td style="padding:6px 0;color:#666">Transportadora</td><td style="padding:6px 0;font-weight:bold">${order.shipping_option.company} — ${order.shipping_option.name}</td></tr>
+            <tr><td style="padding:6px 0;color:#666">Prazo</td><td style="padding:6px 0">${order.shipping_option.delivery_time} dias úteis</td></tr>
+            <tr><td style="padding:6px 0;color:#666">Endereço</td><td style="padding:6px 0">${order.shipping_address}</td></tr>
+          </table>
+
+          ${rastreioHtml}
+
+          <p style="margin-top:24px;color:#666;font-size:13px">Dúvidas? Entre em contato pelo Instagram ou WhatsApp.</p>
+        </div>
+      </div>
+    `,
+  })
+}
+
 export async function enviarEmailNovoPedido(order: {
   id: string
   customer_name: string

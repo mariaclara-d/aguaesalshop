@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
-import { enviarEmailNovoPedido } from '@/lib/email'
+import { enviarEmailNovoPedido, enviarEmailConfirmacaoCliente } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,17 +35,29 @@ export async function POST(request: NextRequest) {
     const { data: order } = await supabase.from('orders').select('*').eq('id', order_nsu).single()
     if (order) {
       try {
-        await enviarEmailNovoPedido({
-          id: order.id,
-          customer_name: order.customer_name,
-          customer_email: order.customer_email,
-          customer_phone: order.customer_phone,
-          shipping_address: order.shipping_address,
-          items: order.items,
-          shipping_option: order.shipping_option,
-          total: order.total,
-          payment_method: capture_method,
-        })
+        await Promise.all([
+          enviarEmailNovoPedido({
+            id: order.id,
+            customer_name: order.customer_name,
+            customer_email: order.customer_email,
+            customer_phone: order.customer_phone,
+            shipping_address: order.shipping_address,
+            items: order.items,
+            shipping_option: order.shipping_option,
+            total: order.total,
+            payment_method: capture_method,
+          }),
+          enviarEmailConfirmacaoCliente({
+            id: order.id,
+            customer_name: order.customer_name,
+            customer_email: order.customer_email,
+            shipping_address: order.shipping_address,
+            items: order.items,
+            shipping_option: order.shipping_option,
+            total: order.total,
+            payment_method: capture_method,
+          }),
+        ])
       } catch (emailError) {
         console.error('Erro ao enviar e-mail:', emailError)
       }
