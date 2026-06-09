@@ -20,9 +20,9 @@ export default function Footer() {
         <div>
           <h4 className="text-sm tracking-widest uppercase mb-3">Redes Sociais</h4>
           <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors text-sm">
-            <Instagram size={16} /> @aguaesal.joias
+            <Instagram size={16} /> @aguaesal.pratas925
           </a>
-          <p className="text-blue-200 text-sm mt-4">contato@aguaesal.com.br</p>
+          <p className="text-blue-200 text-sm mt-4">aguaesal925@gmail.com</p>
         </div>
       </div>
       <div className="border-t border-blue-800 text-center py-4 text-xs text-blue-300">
