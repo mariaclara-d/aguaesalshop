@@ -18,7 +18,7 @@ export default function ContatoPage() {
             </div>
             <div>
               <p className="text-xs tracking-widest uppercase text-gray-400 mb-1">Instagram</p>
-              <p className="font-semibold">@aguaesal.joias</p>
+              <p className="font-semibold">@aguaesal.pratas925</p>
             </div>
           </a>
           <a href="mailto:contato@aguaesal.com.br"
@@ -31,14 +31,14 @@ export default function ContatoPage() {
               <p className="font-semibold">aguaesal925@gmail.com</p>
             </div>
           </a>
-          <a href="https://wa.me/5500000000000"
+          <a href="https://wa.me/5574991303205"
             className="flex items-center gap-4 text-[#1e3a5f] hover:text-[#2a4f7c] transition-colors">
             <div className="w-12 h-12 bg-[#1e3a5f] text-white rounded-full flex items-center justify-center">
               <Phone size={20} />
             </div>
             <div>
               <p className="text-xs tracking-widest uppercase text-gray-400 mb-1">WhatsApp</p>
-              <p className="font-semibold">(00) 9999-0000</p>
+              <p className="font-semibold">(74) 99130-3205</p>
             </div>
           </a>
         </div>
