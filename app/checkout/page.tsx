@@ -87,6 +87,20 @@ export default function CheckoutPage() {
 
       const data = await res.json()
       const disponiveis = data.filter((f: FreteOption) => !f.error)
+
+      // Adiciona motoboy se CEP for de Juazeiro/BA (4890x-4892x) ou Petrolina/PE (563xx)
+      const cep = endereco.cep.replace(/\D/g, '')
+      const isCidadeLocal = cep.startsWith('4890') || cep.startsWith('4891') || cep.startsWith('4892') || cep.startsWith('563')
+      if (isCidadeLocal) {
+        disponiveis.push({
+          id: 999,
+          name: 'Entrega Local',
+          company: { name: '🛵 Motoboy' },
+          custom_price: '0',
+          custom_delivery_time: 1,
+        })
+      }
+
       if (disponiveis.length === 0) {
         setError('Nenhuma transportadora disponível para este CEP.')
         return
@@ -240,7 +254,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-[#1e3a5f]">
-                  {parseFloat(frete.custom_price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  {frete.id === 999 ? 'A combinar' : parseFloat(frete.custom_price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </span>
               </label>
             ))}
@@ -269,11 +283,14 @@ export default function CheckoutPage() {
             ))}
             <div className="flex justify-between text-gray-500 pt-2 border-t border-gray-100">
               <span>Frete ({freteSelecionado?.company.name} — {freteSelecionado?.name})</span>
-              <span>{parseFloat(freteSelecionado!.custom_price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+              <span>{freteSelecionado?.id === 999 ? 'A combinar' : parseFloat(freteSelecionado!.custom_price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
             </div>
             <div className="flex justify-between font-semibold text-[#1e3a5f] text-base pt-2 border-t border-gray-100">
               <span>Total</span>
-              <span>{totalComFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+              <span>{freteSelecionado?.id === 999
+                ? total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ' + frete a combinar'
+                : totalComFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </span>
             </div>
           </div>
           <div className="text-sm text-gray-500 pt-2 border-t border-gray-100">

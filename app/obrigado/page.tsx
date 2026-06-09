@@ -18,6 +18,7 @@ function ObrigadoContent() {
   const [status, setStatus] = useState<PaymentStatus>('loading')
   const [amount, setAmount] = useState<number | null>(null)
   const [receiptUrl, setReceiptUrl] = useState<string | null>(searchParams.get('receipt_url'))
+  const [isMotoboy, setIsMotoboy] = useState(false)
 
   useEffect(() => {
     if (!order_nsu || !transaction_nsu || !slug) {
@@ -35,6 +36,7 @@ function ObrigadoContent() {
         if (data.paid) {
           setStatus('paid')
           setAmount(data.amount)
+          setIsMotoboy(data.is_motoboy || false)
           clearCart()
         } else {
           setStatus('pending')
@@ -92,14 +94,27 @@ function ObrigadoContent() {
                 <span className="font-semibold text-green-600">Confirmado ✓</span>
               </div>
             </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-sm p-4 text-sm text-blue-800 text-left">
-              <p className="font-semibold mb-1">Próximos passos:</p>
-              <ul className="list-disc list-inside space-y-1">
-                <li>Você receberá um e-mail de confirmação</li>
-                <li>Seu pedido será processado e enviado em breve</li>
-                <li>Você poderá rastrear sua entrega pelo e-mail</li>
-              </ul>
-            </div>
+            {isMotoboy ? (
+              <div className="bg-green-50 border border-green-200 rounded-sm p-4 text-sm text-green-800 text-left">
+                <p className="font-semibold mb-2">🛵 Entrega por Motoboy</p>
+                <p className="mb-3">Seu pedido foi confirmado! Clique abaixo para combinar a entrega pelo WhatsApp.</p>
+                <a
+                  href={`https://wa.me/5574991303205?text=Ol%C3%A1!%20Acabei%20de%20realizar%20um%20pedido%20no%20site%20%C3%81gua%20e%20Sal%20Joias%20e%20escolhi%20entrega%20por%20motoboy.%20Pedido%3A%20${order_nsu}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="btn-primary inline-block">
+                  💬 Combinar entrega no WhatsApp
+                </a>
+              </div>
+            ) : (
+              <div className="bg-blue-50 border border-blue-200 rounded-sm p-4 text-sm text-blue-800 text-left">
+                <p className="font-semibold mb-1">Próximos passos:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Você receberá um e-mail de confirmação</li>
+                  <li>Seu pedido será processado e enviado em breve</li>
+                  <li>Você poderá rastrear sua entrega pelo e-mail</li>
+                </ul>
+              </div>
+            )}
             {receiptUrl && (
               <a href={receiptUrl} target="_blank" rel="noopener noreferrer"
                 className="btn-outline inline-block">
