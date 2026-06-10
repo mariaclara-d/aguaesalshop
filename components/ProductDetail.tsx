@@ -17,12 +17,13 @@ export default function ProductDetail({ product }: { product: Product }) {
   const isRing = product.category === 'Anéis'
   const isVariant = product.category === 'Brincos'
   const hasTextSizes = ['Pulseiras', 'Colares', 'Tornozeleiras', 'Masculino'].includes(product.category)
-  const needsSize = (isRing && ringSizes.length > 0) || (isVariant && availableVariants.length > 0) || (hasTextSizes && textSizes.length > 0)
 
   const variants = product.variants || []
   const availableVariants = variants.filter(v => v.price > 0)
   const textSizes = product.sizes || []
   const ringSizes = (product.sizes || []).map(Number)
+
+  const needsSize = (isRing && ringSizes.length > 0) || (isVariant && availableVariants.length > 0) || (hasTextSizes && textSizes.length > 0)
 
   // Preço exibido: se brinco com tamanho selecionado, mostra preço da variante
   const selectedVariant = isVariant ? availableVariants.find(v => v.size === selectedSize) : null
