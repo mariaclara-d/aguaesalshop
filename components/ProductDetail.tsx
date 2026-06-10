@@ -17,7 +17,7 @@ export default function ProductDetail({ product }: { product: Product }) {
   const isRing = product.category === 'Anéis'
   const isVariant = product.category === 'Brincos'
   const hasTextSizes = ['Pulseiras', 'Colares', 'Tornozeleiras', 'Masculino'].includes(product.category)
-  const needsSize = isRing || isVariant || hasTextSizes
+  const needsSize = (isRing && ringSizes.length > 0) || (isVariant && availableVariants.length > 0) || (hasTextSizes && textSizes.length > 0)
 
   const variants = product.variants || []
   const availableVariants = variants.filter(v => v.price > 0)
