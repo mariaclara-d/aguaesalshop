@@ -65,11 +65,11 @@ export async function POST(request: NextRequest) {
         price: Math.round(item.product.price * 100),
         description: item.product.name,
       })),
-      {
+      ...(parseFloat(freteSelecionado.custom_price) > 0 ? [{
         quantity: 1,
         price: Math.round(parseFloat(freteSelecionado.custom_price) * 100),
         description: `Frete — ${freteSelecionado.company.name} ${freteSelecionado.name}`,
-      },
+      }] : []),
     ]
 
     const phone = endereco.telefone.replace(/\D/g, '')
