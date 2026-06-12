@@ -5,9 +5,11 @@ import { enviarEmailNovoPedido, enviarEmailConfirmacaoCliente } from '@/lib/emai
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log('🔔 Webhook InfinitePay body:', JSON.stringify(body))
     const { order_nsu, transaction_nsu, invoice_slug, capture_method, paid_amount } = body
 
     if (!order_nsu) {
+      console.error('❌ order_nsu ausente. Body recebido:', JSON.stringify(body))
       return NextResponse.json({ error: 'order_nsu ausente' }, { status: 400 })
     }
 
@@ -58,8 +60,10 @@ export async function POST(request: NextRequest) {
             payment_method: capture_method,
           }),
         ])
-      } catch (emailError) {
-        console.error('Erro ao enviar e-mail:', emailError)
+      } catch (emailError: any) {
+        console.error('Erro ao enviar e-mail:', emailError?.message || emailError)
+        // Salva o erro no pedido para diagnóstico
+        await supabase.from('orders').update({ notes: `Erro email: ${emailError?.message}` }).eq('id', order_nsu)
       }
     }
 
