@@ -4,6 +4,7 @@ import './globals.css'
 import { CartProvider } from '@/context/CartContext'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { Analytics } from '@vercel/analytics/next'
 
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 const lato = Lato({ subsets: ['latin'], weight: ['300', '400', '700'], variable: '--font-lato' })
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <main>{children}</main>
           <Footer />
+          <Analytics />
         </CartProvider>
       </body>
     </html>
