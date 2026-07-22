@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <head>
-        <Script id="meta-pixel" strategy="afterInteractive">
+        <Script id="meta-pixel" strategy="beforeInteractive">
           {`
             !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -32,6 +32,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             fbq('track', 'PageView');
           `}
         </Script>
+        <noscript>
+          <img height="1" width="1" style={{display:'none'}}
+            src="https://www.facebook.com/tr?id=1671779504034972&ev=PageView&noscript=1"
+          />
+        </noscript>
       </head>
       <body className={`${playfair.variable} ${lato.variable} bg-[#f8f5f0] text-[#1e3a5f]`}>
         <CartProvider>
