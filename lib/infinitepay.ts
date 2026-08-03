@@ -1,4 +1,4 @@
-const INFINITEPAY_API = 'https://api.infinitepay.io'
+const INFINITEPAY_API = 'https://api.checkout.infinitepay.io'
 
 export async function createCheckoutLink(payload: {
   order_nsu: string
@@ -6,7 +6,7 @@ export async function createCheckoutLink(payload: {
   customer: { name: string; email: string; phone_number: string }
   address: { cep: string; street: string; neighborhood: string; number: string; complement?: string }
 }) {
-  const res = await fetch(`${INFINITEPAY_API}/invoices/public/checkout/links`, {
+  const res = await fetch(`${INFINITEPAY_API}/links`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -33,7 +33,7 @@ export async function checkPaymentStatus(params: {
   transaction_nsu: string
   slug: string
 }) {
-  const res = await fetch(`${INFINITEPAY_API}/invoices/public/checkout/payment_check`, {
+  const res = await fetch(`${INFINITEPAY_API}/payment_check`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ handle: process.env.INFINITEPAY_HANDLE, ...params }),

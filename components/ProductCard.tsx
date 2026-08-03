@@ -43,15 +43,15 @@ export default function ProductCard({ product }: { product: Product }) {
             )}
           </div>
           {product.variants && product.variants.length > 0 ? (
-            <Link href={`/produto/${product.id}`} className="btn-primary flex items-center gap-2 text-xs py-2 px-3">
-              <ShoppingBag size={14} /> Ver opções
+            <Link href={`/produto/${product.id}`} className="btn-primary flex items-center gap-1 text-xs py-1.5 px-2">
+              <ShoppingBag size={12} /> Ver opções
             </Link>
           ) : (
             <button
               onClick={() => add(product)}
-              className="btn-primary flex items-center gap-2 text-xs py-2 px-3"
+              className="btn-primary flex items-center gap-1 text-xs py-1.5 px-2"
             >
-              <ShoppingBag size={14} /> Adicionar
+              <ShoppingBag size={12} /> Adicionar
             </button>
           )}
         </div>
