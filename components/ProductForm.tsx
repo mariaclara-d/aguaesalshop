@@ -54,13 +54,28 @@ export default function ProductForm({ product }: Props) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const convertToJpeg = (file: File): Promise<File> =>
+    new Promise((resolve) => {
+      const img = new window.Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = img.width
+        canvas.height = img.height
+        canvas.getContext('2d')!.drawImage(img, 0, 0)
+        canvas.toBlob(blob => {
+          resolve(new File([blob!], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
+        }, 'image/jpeg', 0.85)
+      }
+      img.src = URL.createObjectURL(file)
+    })
+
   const uploadImages = async (files: FileList): Promise<string[]> => {
     const supabase = getSupabase()
     const urls: string[] = []
     for (const file of Array.from(files)) {
-      const ext = file.name.split('.').pop()
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error } = await supabase.storage.from('products').upload(path, file)
+      const converted = await convertToJpeg(file)
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`
+      const { error } = await supabase.storage.from('products').upload(path, converted)
       if (!error) {
         const { data } = supabase.storage.from('products').getPublicUrl(path)
         urls.push(data.publicUrl)
