@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 import { getSupabaseServer } from '@/lib/supabase-server'
 import ProductCard from '@/components/ProductCard'
