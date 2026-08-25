@@ -55,7 +55,11 @@ export default function ProductForm({ product }: Props) {
   }
 
   const convertToJpeg = (file: File): Promise<File> =>
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
+      if (['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        resolve(file)
+        return
+      }
       const img = new window.Image()
       img.onload = () => {
         const canvas = document.createElement('canvas')
@@ -63,9 +67,11 @@ export default function ProductForm({ product }: Props) {
         canvas.height = img.height
         canvas.getContext('2d')!.drawImage(img, 0, 0)
         canvas.toBlob(blob => {
-          resolve(new File([blob!], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
+          if (!blob) { reject(new Error('Falha ao converter imagem')); return }
+          resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
         }, 'image/jpeg', 0.85)
       }
+      img.onerror = () => reject(new Error(`Não foi possível carregar: ${file.name}`))
       img.src = URL.createObjectURL(file)
     })
 
@@ -74,7 +80,8 @@ export default function ProductForm({ product }: Props) {
     const urls: string[] = []
     for (const file of Array.from(files)) {
       const converted = await convertToJpeg(file)
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`
+      const ext = converted.type === 'image/jpeg' ? 'jpg' : converted.type.split('/')[1]
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
       const { error } = await supabase.storage.from('products').upload(path, converted)
       if (!error) {
         const { data } = supabase.storage.from('products').getPublicUrl(path)
