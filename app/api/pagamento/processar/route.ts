@@ -4,13 +4,14 @@ import { getSupabaseServer } from '@/lib/supabase-server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { items, endereco, freteSelecionado, total } = await request.json()
+    const { items, endereco, freteSelecionado, total, cupomAplicado, desconto } = await request.json()
 
     if (!items?.length || !endereco?.email || !freteSelecionado) {
       return NextResponse.json({ error: 'Dados incompletos no checkout' }, { status: 400 })
     }
 
     const totalComFrete = total + parseFloat(freteSelecionado.custom_price)
+    const totalFinal = cupomAplicado ? totalComFrete * (1 - desconto) : totalComFrete
 
     const supabase = await getSupabaseServer()
     const { data: order, error: orderError } = await supabase
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
           price: freteSelecionado.custom_price,
           delivery_time: freteSelecionado.custom_delivery_time,
         },
-        total: totalComFrete,
+        total: totalFinal,
         status: 'pending',
       }])
       .select()
@@ -59,15 +60,16 @@ export async function POST(request: NextRequest) {
     }
     console.log('Pedido salvo:', order.id)
 
+    const fatorDesconto = cupomAplicado ? (1 - desconto) : 1
     const checkoutItems = [
       ...items.map((item: any) => ({
         quantity: item.quantity,
-        price: Math.round(item.product.price * 100),
+        price: Math.round(item.product.price * fatorDesconto * 100),
         description: item.product.name,
       })),
       ...(parseFloat(freteSelecionado.custom_price) > 0 ? [{
         quantity: 1,
-        price: Math.round(parseFloat(freteSelecionado.custom_price) * 100),
+        price: Math.round(parseFloat(freteSelecionado.custom_price) * fatorDesconto * 100),
         description: `Frete — ${freteSelecionado.company.name} ${freteSelecionado.name}`,
       }] : []),
     ]

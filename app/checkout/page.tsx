@@ -39,6 +39,10 @@ export default function CheckoutPage() {
   const [freteSelecionado, setFreteSelecionado] = useState<FreteOption | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [cupom, setCupom] = useState('')
+  const [cupomAplicado, setCupomAplicado] = useState(false)
+  const [cupomMsg, setCupomMsg] = useState('')
+  const [desconto, setDesconto] = useState(0)
 
   if (items.length === 0) {
     router.replace('/carrinho')
@@ -126,7 +130,7 @@ export default function CheckoutPage() {
       const res = await fetch('/api/pagamento/processar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, endereco, freteSelecionado, total }),
+        body: JSON.stringify({ items, endereco, freteSelecionado, total, cupomAplicado, desconto }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -142,6 +146,26 @@ export default function CheckoutPage() {
   }
 
   const totalComFrete = total + (freteSelecionado ? parseFloat(freteSelecionado.custom_price) : 0)
+  const totalComDesconto = cupomAplicado ? totalComFrete * (1 - desconto) : totalComFrete
+
+  const aplicarCupom = async () => {
+    setCupomMsg('')
+    const res = await fetch('/api/cupom/verificar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cpf: endereco.cpf, cupom }),
+    })
+    const data = await res.json()
+    if (data.valid) {
+      setCupomAplicado(true)
+      setDesconto(data.discount)
+      setCupomMsg(data.message)
+    } else {
+      setCupomAplicado(false)
+      setDesconto(0)
+      setCupomMsg(data.message)
+    }
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
@@ -285,13 +309,40 @@ export default function CheckoutPage() {
               <span>Frete ({freteSelecionado?.company.name} — {freteSelecionado?.name})</span>
               <span>{freteSelecionado?.id === 999 ? 'A combinar' : parseFloat(freteSelecionado!.custom_price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
             </div>
+            {cupomAplicado && (
+              <div className="flex justify-between text-green-600 text-sm">
+                <span>Desconto (10%)</span>
+                <span>- {(totalComFrete * desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+              </div>
+            )}
             <div className="flex justify-between font-semibold text-[#1e3a5f] text-base pt-2 border-t border-gray-100">
               <span>Total</span>
               <span>{freteSelecionado?.id === 999
                 ? total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ' + frete a combinar'
-                : totalComFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                : totalComDesconto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </span>
             </div>
+          </div>
+
+          {/* Campo de cupom */}
+          <div className="pt-2 border-t border-gray-100">
+            <label className="block text-sm text-gray-600 mb-1">Cupom de desconto</label>
+            <div className="flex gap-2">
+              <input
+                value={cupom}
+                onChange={e => { setCupom(e.target.value.toUpperCase()); setCupomAplicado(false); setCupomMsg('') }}
+                placeholder="Digite o cupom"
+                disabled={cupomAplicado}
+                className="flex-1 border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm uppercase"
+              />
+              <button onClick={aplicarCupom} disabled={!cupom || cupomAplicado}
+                className="btn-primary text-sm px-4 disabled:opacity-50">
+                Aplicar
+              </button>
+            </div>
+            {cupomMsg && (
+              <p className={`text-xs mt-1 ${cupomAplicado ? 'text-green-600' : 'text-red-500'}`}>{cupomMsg}</p>
+            )}
           </div>
           <div className="text-sm text-gray-500 pt-2 border-t border-gray-100">
             <p className="font-semibold text-gray-700 mb-1">Entrega para:</p>
