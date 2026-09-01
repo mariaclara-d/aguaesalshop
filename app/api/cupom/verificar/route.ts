@@ -24,5 +24,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ valid: false, message: 'Cupom válido apenas para a primeira compra' })
   }
 
-  return NextResponse.json({ valid: true, discount: 0.10, message: '10% de desconto aplicado!' })
+  return NextResponse.json({ valid: true, discount: 0.20, message: '20% de desconto aplicado!' })
 }
