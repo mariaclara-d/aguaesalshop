@@ -22,7 +22,7 @@ export default function ProductForm({ product }: Props) {
     price: product?.price?.toString() || '',
     category: product?.category || 'Anéis',
     stock: product?.stock?.toString() || '0',
-    weight: product?.weight?.toString() || '',
+    weight: product?.weight ? (product.weight * 1000).toString() : '',
     width: product?.width?.toString() || '',
     height: product?.height?.toString() || '',
     length: product?.length?.toString() || '',
@@ -121,7 +121,7 @@ export default function ProductForm({ product }: Props) {
         category: form.category,
         stock: parseInt(form.stock),
         images,
-        weight: form.weight ? parseFloat(form.weight) : null,
+        weight: form.weight ? parseFloat(form.weight) / 1000 : null,
         width: form.width ? parseFloat(form.width) : null,
         height: form.height ? parseFloat(form.height) : null,
         length: form.length ? parseFloat(form.length) : null,
@@ -278,9 +278,9 @@ export default function ProductForm({ product }: Props) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Peso (kg)</label>
-            <input name="weight" type="number" step="0.001" min="0" value={form.weight} onChange={handleChange}
-              placeholder="ex: 0.050"
+            <label className="block text-sm text-gray-600 mb-1">Peso (gramas)</label>
+            <input name="weight" type="number" step="1" min="0" value={form.weight} onChange={handleChange}
+              placeholder="ex: 50"
               className="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-[#1e3a5f] rounded-sm" />
           </div>
           <div>
