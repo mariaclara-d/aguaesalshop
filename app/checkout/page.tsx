@@ -299,10 +299,10 @@ export default function CheckoutPage() {
             Resumo do pedido
           </h2>
           <div className="space-y-2 text-sm">
-            {items.map(({ product, quantity }) => (
-              <div key={product.id} className="flex justify-between">
-                <span>{product.name} × {quantity}</span>
-                <span>{(product.price * quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+            {items.map(({ product, quantity, size, price }) => (
+              <div key={`${product.id}-${size ?? ''}`} className="flex justify-between">
+                <span>{product.name}{size ? ` (${size})` : ''} × {quantity}</span>
+                <span>{((price ?? product.price) * quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
               </div>
             ))}
             <div className="flex justify-between text-gray-500 pt-2 border-t border-gray-100">
@@ -311,7 +311,7 @@ export default function CheckoutPage() {
             </div>
             {cupomAplicado && (
               <div className="flex justify-between text-green-600 text-sm">
-                <span>Desconto (10%)</span>
+                <span>Desconto ({Math.round(desconto * 100)}%)</span>
                 <span>- {(totalComFrete * desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
               </div>
             )}
